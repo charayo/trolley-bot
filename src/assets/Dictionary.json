@@ -1,0 +1,15 @@
+{
+    "dictionary":{
+        "prompt":[
+            "Hello Media Bot",
+            "Tell me about The Media Art Department",
+            "Tell me about yourself"
+        ],
+        "response":[
+            "Hi there, what can I assist you with?",
+            "Here is what I know about NMHU Media Art Department...",
+            "I am Trolley Bot, the NMHU Media Art voice assistant..."
+
+        ]
+    }
+}
