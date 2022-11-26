@@ -17,7 +17,10 @@ function WebkitComponent() {
 
   const [recStarted, setRecStarted] = useState(false);
   const [promptIndex, setPromptIndex] = useState(0); //Here, I use the prompt index to match a corresponding response index from the Dictionary Json file
-const [prompt, setPrompt] = useState("")
+  const [prompt, setPrompt] = useState("");
+  const [possiblePrompts, setPossiblePrompts] = useState([]);
+  const [searchEnded, setSearchEnded] = useState(false)
+  const [score, setScore] = useState({statement: "not yet", score: 0, itsIndex:0});
   ////////////Picovoice Setup///////////////////////////////////////////////////////////////////////////
   /*
   const key = "qANt2aKEYxkEMOfQAR9Nqmm6MN02aOHcBs/VatqnCUPCHqfuZyKj/A==";
@@ -68,7 +71,7 @@ const [prompt, setPrompt] = useState("")
   const [status, setStatus] = useState(0);
 
   useEffect(() => {
-    console.log(dictionary);
+    // console.log(dictionary);
 
     if (!browserSupportsSpeechRecognition) {
       return <span>Browser doesn't support speech recognition.</span>;
@@ -79,9 +82,18 @@ const [prompt, setPrompt] = useState("")
   useEffect(() => {
     if (!listening && recStarted) {
       console.log("listening ended");
-      handleVoiceRec();
+      // handleVoiceRec();
+      dictLooper()
     }
   }, [listening]);
+
+useEffect(()=>{
+  if(setSearchEnded){
+    speak(dictionary.response[score.itsIndex]);
+    setScore({statement: "", score: 0, itsIndex: 0})
+  }
+},[searchEnded])
+
 
   //function Speak that speaks out a string of texts
   function speak(string) {
@@ -103,7 +115,6 @@ const [prompt, setPrompt] = useState("")
     return token;
   };
 
-
   /*------------dictionaryMatch function Starts here-----------------*/
   //dictionaryMatch: a function that compares two arrays of tokens to see if they have common words and then returns a result object
   let dictionaryMatch = async (arrayOfInputTokens, arrayOfDicTokens) => {
@@ -122,20 +133,18 @@ const [prompt, setPrompt] = useState("")
     let matchResult = {
       status: match,
       commonTokens: commonTokens,
+
     };
     // console.log(matchResult);
     return matchResult; //returning the match count and common words as an object of result
   };
   /*------------dictionaryMatch function ends here-----------------*/
-let dictLooper = ()=>{
-  dictionary.prompt.map((prompt, index)=>{
-    
-  })
-}
 
-  let handleVoiceRec = (prompt) => {
+  let handleVoiceRec = (prompt, promptIndex) => {
     let dict_token;
-    dict_token = sentenceTokenizer(dictionary.prompt[0])
+    //tokenize the prompt to words
+    dict_token = sentenceTokenizer(prompt);
+    // dict_token = sentenceTokenizer(dictionary.prompt[0]);
 
     let transcriptTokens = sentenceTokenizer(transcript);
     let result = dictionaryMatch(transcriptTokens, dict_token);
@@ -144,20 +153,57 @@ let dictLooper = ()=>{
     result.then((data) => {
       res = data;
 
-      console.log(res.status);
-      if (res.status > 1) {
-        console.log(dictionary.response[0]);
-        speak(dictionary.response[0]);
-        setTimeout(()=>{
-          beginListening();
-        },2000)
+
+      // console.log(res.status);
+      
+      // setPossiblePrompts.push({statement: prompt, score: res.status})
+      if (res.status >= 1) {
+        console.log(prompt, res.status);
+        setPossiblePrompts(current=> [...current, {statement: prompt, score: res.status}])
+        // setScore(currentScore => {
+        //   if(currentScore.score <res.status){
+        //     return {statement: prompt, score: res.status}
+        //   }
+        // })
+
+        if(score.score < res.status){
+          setScore({statement: prompt, score: res.status, itsIndex: promptIndex})
+        }
+        // speak(dictionary.response[0]);
+        // setTimeout(() => {
+        //   beginListening();
+        // }, 2000);
+        
       }
     });
+    console.log("over");
   };
+
+  //a function that will loop through all dictionary prompts, find the one with the highest status score
+  let dictLooper = () => {
+    dictionary.prompt.map((prompt, index) => {
+      handleVoiceRec(prompt, index);
+      if(index == dictionary.prompt.length-1){
+        setTimeout(()=>{
+          console.log("sure last",index, dictionary.prompt.length-1);
+          setSearchEnded(true)
+        },100)
+        
+      }
+    });
+
+   //loop through the possible prompts and decide which one has the highest score
+
+  };
+  ///////////////////////////
+
   let beginListening = () => {
     SpeechRecognition.startListening();
     setRecStarted(true);
   };
+  // console.log(cur)
+  // console.log(score.score)
+  // console.log("ended")
 
   return (
     <div>
