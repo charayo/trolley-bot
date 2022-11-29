@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { usePorcupine } from "@picovoice/porcupine-react";
-// import {
-//   PorcupineKeyword,
-//   PorcupineModel,
-//   RhinoContext,
-//   RhinoModel,
-// } from "@picovoice/picovoice-web";
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from "react-speech-recognition";
+
+import SpeechRecognition, {  useSpeechRecognition } from "react-speech-recognition";
 import TBot from "../assets/Dictionary.json";
 
 function WebkitComponent() {
@@ -21,53 +13,14 @@ function WebkitComponent() {
   const [possiblePrompts, setPossiblePrompts] = useState([]);
   const [searchEnded, setSearchEnded] = useState(false)
   const [score, setScore] = useState({statement: "not yet", score: 0, itsIndex:0});
-  ////////////Picovoice Setup///////////////////////////////////////////////////////////////////////////
-  /*
-  const key = "qANt2aKEYxkEMOfQAR9Nqmm6MN02aOHcBs/VatqnCUPCHqfuZyKj/A==";
-  const ACCESS_KEY = key;
-  const porcupineKeyword = {
-    label: "picovoice",
-    publicPath: "Hey-TB-Bot_en_wasm_v2_1_0.ppn",
-  };
-
-  const porcupineModel = {
-    publicPath: "porcupine_params.pv",
-  };
-  const {
-    keywordDetection,
-    isLoaded,
-    isListening,
-    error,
-    init,
-    start,
-    stop,
-    release,
-  } = usePorcupine();
-  // const porcupineModel = {publicPath: "${PPN_MODEL_PATH}"};
-
-  useEffect(() => {
-    init(
-      ACCESS_KEY,
-      [BuiltInKeyword.Porcupine, BuiltInKeyword.Bumblebee],
-      porcupineModel
-    );
-  }, []);
-
-  useEffect(() => {
-    if (keywordDetection !== null) {
-      // ... use keyword detection result
-      console.log("Yes? I can hear you");
-    }
-  }, [keywordDetection]);
-*/
-  ////////////////////////////////////////////////////////////////////////////////////////////
-
+  
   const {
     transcript,
     listening,
     resetTranscript,
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
+
   const [status, setStatus] = useState(0);
 
   useEffect(() => {
@@ -82,17 +35,21 @@ function WebkitComponent() {
   useEffect(() => {
     if (!listening && recStarted) {
       console.log("listening ended");
+      setRecStarted(false)
       // handleVoiceRec();
       dictLooper()
     }
   }, [listening]);
 
 useEffect(()=>{
-  if(setSearchEnded){
+  if(searchEnded && score.score !== 0){
     speak(dictionary.response[score.itsIndex]);
-    setScore({statement: "", score: 0, itsIndex: 0})
+    console.log("spoken");
+    setSearchEnded(false);
+    setScore({statement: "not yet", score: 0, itsIndex:0})
+    // setScore({statement: "", score: 0, itsIndex: 0})
   }
-},[searchEnded])
+},[dictLooper, searchEnded])
 
 
   //function Speak that speaks out a string of texts
@@ -165,9 +122,11 @@ useEffect(()=>{
         //     return {statement: prompt, score: res.status}
         //   }
         // })
-
+        console.log(score.score, res.status);
         if(score.score < res.status){
-          setScore({statement: prompt, score: res.status, itsIndex: promptIndex})
+          console.log("changing score");
+          setScore({statement: "not yet", score: 5, itsIndex:0})
+          // setScore({statement: prompt, score: res.status, itsIndex: promptIndex})
         }
         // speak(dictionary.response[0]);
         // setTimeout(() => {
@@ -180,12 +139,11 @@ useEffect(()=>{
   };
 
   //a function that will loop through all dictionary prompts, find the one with the highest status score
-  let dictLooper = () => {
+  var dictLooper = () => {
     dictionary.prompt.map((prompt, index) => {
       handleVoiceRec(prompt, index);
       if(index == dictionary.prompt.length-1){
         setTimeout(()=>{
-          console.log("sure last",index, dictionary.prompt.length-1);
           setSearchEnded(true)
         },100)
         
