@@ -125,8 +125,7 @@ useEffect(()=>{
         console.log(score.score, res.status);
         if(score.score < res.status){
           console.log("changing score");
-          setScore({statement: "not yet", score: 5, itsIndex:0})
-          // setScore({statement: prompt, score: res.status, itsIndex: promptIndex})
+          setScore({statement: prompt, score: res.status, itsIndex: promptIndex})
         }
         // speak(dictionary.response[0]);
         // setTimeout(() => {
