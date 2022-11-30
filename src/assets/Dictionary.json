@@ -1,15 +1,18 @@
 {
     "dictionary":{
         "prompt":[
-            "Hello Media Bot",
+            "mssd",
             "Tell me about The Media Art Department",
-            "Tell me about yourself"
+            "Tell me about yourself",
+            "Who is Mary?",
+            "What programming language were you built with?"
         ],
         "response":[
             "Hi there, what can I assist you with?",
             "Here is what I know about NMHU Media Art Department...",
-            "I am Trolley Bot, the NMHU Media Art voice assistant..."
-
+            "I am Trolley Bot, the NMHU Media Art voice assistant...",
+            "Mary, her office is the first on the right-hand side of the main entrance. She technically keeps the building running; she's not scary, and knows almost everything about the building.",
+            "I was built with JavaScript, React Js makes me maintain this stable state."
         ]
     }
 }
