@@ -49,6 +49,18 @@ function TestComponent() {
   }, [listening]);
 
   useEffect(() => {
+    let resetter = ()=>{
+      setSearchEnded(false);
+
+      //   console.log("resetting score back to 0");
+      setScoreState((scoreState) => ({
+        ...scoreState,
+        statement: "not yet",
+        score: 0,
+        itsIndex: 0,
+      }));
+      document.getElementById('transDisplay').innerHTML = "";
+    }
     //listen for the wake word
     // if (transcript == "mssd") {
     //   setWakeIdentified(true); //set the state to show the bot has listened to the wake word
@@ -60,16 +72,13 @@ function TestComponent() {
     if (searchEnded && scoreState.score !== 0) {
       speak(dictionary.response[scoreState.itsIndex]);
       //   console.log("spoken");
-      setSearchEnded(false);
-
-      //   console.log("resetting score back to 0");
-      setScoreState((scoreState) => ({
-        ...scoreState,
-        statement: "not yet",
-        score: 0,
-        itsIndex: 0,
-      }));
+      resetter();
       //   console.log("reset:", scoreState);
+    }
+    else if(searchEnded && scoreState.score == 0){
+      speak("I am sorry, I didn't get that. Maybe the prompt is not in my dictionary");
+       //   console.log("spoken");
+       resetter();
     }
     // }
   }, [dictLooper, searchEnded]);
@@ -139,7 +148,7 @@ function TestComponent() {
     result.then((data) => {
       res = data;
 
-      if (res.status >= 1) {
+      if (res.status > 1 || (res.status == 1 && prompt == "mssd")) {
         // console.log("prompt", prompt);
         setPossiblePrompts((current) => [
           ...current,
@@ -196,7 +205,7 @@ function TestComponent() {
   }
 
   return (
-    <div>
+    <div className="p-4">
       <h1>Trolley Building Voice Assistant</h1>
 
       <br />
@@ -206,39 +215,33 @@ function TestComponent() {
           start button then say "MSSD"{" "}
         </p>
         <p>Microphone: {listening ? "on" : "off"}</p>
-        <button id="startBtn" onClick={beginListening}>
+        <button className="btn btn-success m-1" id="startBtn" onClick={beginListening}>
           Start
         </button>
-        <button onClick={SpeechRecognition.stopListening}>Stop</button>
-        <button onClick={resetTranscript}>Reset</button>
+        <button className="btn btn-danger m-1" onClick={SpeechRecognition.stopListening}>Stop</button>
+        <button className="btn btn-warning m-1" onClick={resetTranscript}>Reset</button>
 
-        <div>
-          <label>Voice Prompt</label>
-          {/* <p style={styles.promptWrap}>{transcript}</p> */}
+        <div className="mt-1">
           <div>
             {" "}
             <img src={imageUrl} width={200} />
           </div>
-          <div>
+          <div className="border border-primary border-1 p-3 m-3 rounded w-50 mx-auto">
             <span>Dictionary Prompts</span>
             <p>
-            "Tell me about The Media Art Department",
-            "Tell me about yourself",
+            "What do you know about mssd?",
+            "introduce yourself",
             "Who is Mary?",
-            "What programming language were you built with?"
             </p>
           </div>
+          <div>
+            <p id="transDisplay">{transcript}</p>
+          </div>
+          
         </div>
       </div>
     </div>
   );
 }
-
-const styles = {
-  promptWrap: {
-    padding: 10,
-    border: "solid 4 black",
-  },
-};
 
 export default TestComponent;

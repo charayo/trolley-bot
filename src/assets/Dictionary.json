@@ -1,18 +1,18 @@
 {
     "dictionary":{
         "prompt":[
-            "mssd",
-            "Tell me about The Media Art Department",
-            "Tell me about yourself",
-            "Who is Mary?",
-            "What programming language were you built with?"
+            "mssd",          
+            "introduce yourself",
+            "Who is Mary",
+            "What do you know about mssd?"
+            
         ],
         "response":[
             "Hi there, what can I assist you with?",
-            "Here is what I know about NMHU Media Art Department...",
-            "I am Trolley Bot, the NMHU Media Art voice assistant...",
+            "I am Trolley Bot, the NMHU Media Art voice assistant. I was built with JavaScript, React Js makes me maintain this stable state.",
             "Mary, her office is the first on the right-hand side of the main entrance. She technically keeps the building running; she's not scary, and knows almost everything about the building.",
-            "I was built with JavaScript, React Js makes me maintain this stable state."
+            "The course is dedicated to teaching students a wide array of programming languages that help them in their career. The program stresses programming concepts and syntax across major languages currently in demand. Students will study modules like Principles of Software Designs, Applied Algorithms & Architecture, Synthesis of Media Arts & CS, etc. Upon completing the program, Software Systems Design graduate students will have developed proficiency in a variety of programming languages and hardware solutions used by professionals in the fields of software development, web development, mobile development, game development, physical computing, and microcontrollers."
+
         ]
     }
 }
